@@ -3,4 +3,5 @@
 * modal
 * insertAdjacentHTML
 * localStorage
+* swiper-js
 
