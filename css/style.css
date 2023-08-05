@@ -839,3 +839,13 @@ button {
         margin-right: 0;
     }
 }
+
+@media (max-width: 320px) {
+    .modal-dialog-auth{
+        width: 97%;
+    }
+    .modal-dialog{
+        padding: 40px 5px;
+    }
+
+}
