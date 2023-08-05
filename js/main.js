@@ -23,6 +23,12 @@ const cardsMenu = document.querySelector(".cards-menu");
 
 let login = localStorage.getItem('jsDelivery');
 
+const valide = (str) =>{
+    const nameReg = /^[a-zA-Z0-9\-.]+$/;
+    return nameReg.test(str);
+}
+
+
 const toogleModal = ()=>{
     modal.classList.toggle("is-open");
 }
@@ -31,6 +37,12 @@ const toogleModalAuth = () => {
     loginInput.style.borderColor = "";
     modalAuth.classList.toggle("is-open")
 };
+
+const returnMain = () =>{
+    containerPromo.classList.remove('hide');
+    restaurants.classList.remove('hide');
+    menu.classList.add('hide');
+}
 
 const autorized = () => {
     const logOut = () =>{
@@ -43,6 +55,7 @@ const autorized = () => {
         buttonOut.style.display = '';
         buttonOut.removeEventListener('click', logOut);
         checkAuth();
+        returnMain();
     };
 
     console.log("Авторизован!");
@@ -59,7 +72,7 @@ const notAutorized = () =>{
     const logIn = (event) =>{
         event.preventDefault();
 
-        if (loginInput.value.trim()){
+        if (valide(loginInput.value.trim())){
             login = loginInput.value;
             localStorage.setItem(
                 'jsDelivery', login
@@ -71,7 +84,9 @@ const notAutorized = () =>{
             loginForm.reset();
             checkAuth();
         }else{
+            loginInput.style.outline = 'none';
             loginInput.style.borderColor = "tomato";
+            loginInput.value = '';
         }
 
         
@@ -90,7 +105,7 @@ const checkAuth = () => {
     }
 };
 
-checkAuth();
+
 
 // Карточки
 const createCardRestaurant = () =>{
@@ -158,15 +173,19 @@ const openGoods = (event) => {
     const restaurant = target.closest('.card-restaurant');
     
     if (restaurant){
-        containerPromo.classList.add('hide');
-        restaurants.classList.add('hide');
-        menu.classList.remove('hide');
+        if (login){
 
-        cardsMenu.textContent = '';
+            containerPromo.classList.add('hide');
+            restaurants.classList.add('hide');
+            menu.classList.remove('hide');
+            cardsMenu.textContent = '';
+            createCardFood();
+            createCardFood();
+            createCardFood();
 
-        createCardFood();
-        createCardFood();
-        createCardFood();
+        }else{
+            toogleModalAuth();
+        }
     }
 
 
@@ -175,9 +194,6 @@ const openGoods = (event) => {
 cartButton.addEventListener("click", toogleModal);
 close.addEventListener("click", toogleModal);
 
-createCardRestaurant();
-createCardRestaurant();
-createCardRestaurant();
 
 cardsRestaurants.addEventListener('click', openGoods);
 
@@ -186,3 +202,31 @@ logo.addEventListener("click", ()=>{
     restaurants.classList.remove('hide');
     menu.classList.add('hide');
 })
+
+
+createCardRestaurant();
+createCardRestaurant();
+createCardRestaurant();
+
+checkAuth();
+
+const swiper = new Swiper('.swiper', {
+    direction: 'horizontal',
+    loop: true,
+    autoplay: {
+        delay: 4000
+    },
+    speed: 1500,
+    paralax: true,
+
+    navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+    },
+
+    pagination: {
+        el: '.swiper-pagination',
+    },
+}
+
+);

@@ -252,7 +252,7 @@ button {
 .card-image {
     width: 100%;
     height: 250px;
-    object-fit: cover;
+    object-fit: contain;
 }
 
 
@@ -673,6 +673,9 @@ button {
         margin-left: 20px;
     }
 
+    .swuper-slide{
+        min-height: 309px;
+    }
 
     .pizza {
         background-size: 400px;
@@ -725,10 +728,18 @@ button {
         flex: 1;
     }
 
+    .swiper-slide{
+        min-height: 235px;
+    }
+
+    .swiper-button-prev, .swiper-button-next{
+        display: none;
+    }
+
     .promo {
         background-image: none;
     }
-
+    
     .promo-title {
         margin-bottom: 10px;
     }
@@ -846,6 +857,9 @@ button {
     }
     .modal-dialog{
         padding: 40px 5px;
+    }
+    .swiper-slide{
+        min-height: 330px;
     }
 
 }
