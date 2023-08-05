@@ -1,1 +1,5 @@
 # JsDelivery
+* modal
+* insertAdjacentHTML
+* localStorage
+
