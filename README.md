@@ -4,4 +4,7 @@
 * insertAdjacentHTML
 * localStorage
 * swiper-js
+* JSON 
+* AJAX
+* FETCH
 

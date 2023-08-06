@@ -23,15 +23,28 @@ const cardsMenu = document.querySelector(".cards-menu");
 
 let login = localStorage.getItem('jsDelivery');
 
+const  getData = async (url) =>{
+
+    const response = await fetch(url);
+
+    if (!response.ok){
+        throw new Error(`Ошибка по адресу ${url}, статус ошибка ${response.status}`)
+    }
+
+    return await response.json();
+};
+
+
+
 const valide = (str) =>{
     const nameReg = /^[a-zA-Z0-9\-.]+$/;
     return nameReg.test(str);
-}
+};
 
 
 const toogleModal = ()=>{
     modal.classList.toggle("is-open");
-}
+};
 
 const toogleModalAuth = () => {
     loginInput.style.borderColor = "";
@@ -42,7 +55,7 @@ const returnMain = () =>{
     containerPromo.classList.remove('hide');
     restaurants.classList.remove('hide');
     menu.classList.add('hide');
-}
+};
 
 const autorized = () => {
     const logOut = () =>{
@@ -108,23 +121,25 @@ const checkAuth = () => {
 
 
 // Карточки
-const createCardRestaurant = () =>{
+const createCardRestaurant = (restaurant) =>{
+
+    const { name, time_of_delivery, stars, price, kitchen, products, image } = restaurant;
 
     const card = `
-        <a  class="card card-restaurant">
-            <img src="img/pizza-plus/preview.jpg" alt="image" class="card-image" />
+        <a  class="card card-restaurant" data-products="${products}">
+            <img src="${image}" alt="image" class="card-image" />
             <div class="card-text">
                 <div class="card-heading">
-                    <h3 class="card-title">Пицца плюс</h3>
-                    <span class="card-tag tag">50 мин</span>
+                    <h3 class="card-title">${name}</h3>
+                    <span class="card-tag tag">${time_of_delivery} мин</span>
                 </div>
 
                 <div class="card-info">
                     <div class="rating">
-                        4.5
+                        ${stars}
                     </div>
-                    <div class="price">От 900 ₽</div>
-                    <div class="category">Пицца</div>
+                    <div class="price">От ${price} ₽</div>
+                    <div class="category">${kitchen}</div>
                 </div>
             </div>
         </a>
@@ -134,22 +149,25 @@ const createCardRestaurant = () =>{
 
 };
 
-const createCardFood = () =>{
+const createCardFood = (goods) =>{
+
+    const { name, description, price, image } = goods;
+
     const card = document.createElement('div');
     card.className = 'card';
 
     card.insertAdjacentHTML('beforeend',  `
 
-        <img src="img/pizza-plus/pizza-vesuvius.jpg" alt="image" class="card-image" />
+        <img src="${image}" alt="image" class="card-image" />
         
         <div class="card-text">
             <div class="card-heading">
-                <h3 class="card-title card-title-reg">Пицца Везувий</h3>
+                <h3 class="card-title card-title-reg">${name}</h3>
             </div>
 
             <div class="card-info">
-                <div class="ingredients">Соус томатный, сыр «Моцарелла», ветчина, пепперони, перец
-                    «Халапенье», соус «Тобаско», томаты.
+                <div class="ingredients">
+                    ${description}
                 </div>
             </div>
 
@@ -158,7 +176,7 @@ const createCardFood = () =>{
                     <span class="button-card-text">В корзину</span>
                     <span class="button-cart-svg"></span>
                 </button>
-                <strong class="card-price-bold">545 ₽</strong>
+                <strong class="card-price-bold">${price} ₽</strong>
             </div>
         </div>
 
@@ -166,67 +184,77 @@ const createCardFood = () =>{
 
     cardsMenu.insertAdjacentElement("beforeend", card)
     
-}
+};
 
 const openGoods = (event) => {
     const target = event.target;
-    const restaurant = target.closest('.card-restaurant');
-    
-    if (restaurant){
-        if (login){
 
+    if (login){
+        const restaurant = target.closest('.card-restaurant');
+        if (restaurant){
+
+            cardsMenu.textContent = '';
             containerPromo.classList.add('hide');
             restaurants.classList.add('hide');
-            menu.classList.remove('hide');
-            cardsMenu.textContent = '';
-            createCardFood();
-            createCardFood();
-            createCardFood();
 
-        }else{
-            toogleModalAuth();
+            getData(`./db/${restaurant.dataset.products}`).then((data)=>{
+                data.forEach(createCardFood);
+            });
+
+            menu.classList.remove('hide');
+            
+
         }
+        
+    }else{
+        toogleModalAuth();
     }
 
 
+};
+
+const init = () =>{
+    getData('./db/partners.json').then((data) =>{
+
+        data.forEach(createCardRestaurant);
+    
+    });
+    
+    
+    cartButton.addEventListener("click", toogleModal);
+    
+    close.addEventListener("click", toogleModal);
+    
+    cardsRestaurants.addEventListener('click', openGoods);
+    
+    logo.addEventListener("click", ()=>{
+        containerPromo.classList.remove('hide');
+        restaurants.classList.remove('hide');
+        menu.classList.add('hide');
+    });
+    
+    checkAuth();
+    
+    const swiper = new Swiper('.swiper', {
+            direction: 'horizontal',
+            loop: true,
+            autoplay: {
+                delay: 4000
+            },
+            speed: 1500,
+            paralax: true,
+    
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+    
+            pagination: {
+                el: '.swiper-pagination',
+            },
+        
+    });
 }
 
-cartButton.addEventListener("click", toogleModal);
-close.addEventListener("click", toogleModal);
 
-
-cardsRestaurants.addEventListener('click', openGoods);
-
-logo.addEventListener("click", ()=>{
-    containerPromo.classList.remove('hide');
-    restaurants.classList.remove('hide');
-    menu.classList.add('hide');
-})
-
-
-createCardRestaurant();
-createCardRestaurant();
-createCardRestaurant();
-
-checkAuth();
-
-const swiper = new Swiper('.swiper', {
-    direction: 'horizontal',
-    loop: true,
-    autoplay: {
-        delay: 4000
-    },
-    speed: 1500,
-    paralax: true,
-
-    navigation: {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev',
-    },
-
-    pagination: {
-        el: '.swiper-pagination',
-    },
-}
-
-);
+init();
