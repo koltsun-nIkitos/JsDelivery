@@ -23,6 +23,16 @@ const cardsMenu = document.querySelector(".cards-menu");
 
 let login = localStorage.getItem('jsDelivery');
 
+// Ресторан
+const restaurantTitle = document.querySelector(".restaurant-title");
+const rating = document.querySelector(".rating");
+const minPrice = document.querySelector(".price");
+const category = document.querySelector(".category");
+
+// Поиск
+const inputSearch = document.querySelector(".input-search");
+
+
 const  getData = async (url) =>{
 
     const response = await fetch(url);
@@ -126,7 +136,9 @@ const createCardRestaurant = (restaurant) =>{
     const { name, time_of_delivery, stars, price, kitchen, products, image } = restaurant;
 
     const card = `
-        <a  class="card card-restaurant" data-products="${products}">
+        <a  class="card card-restaurant" 
+            data-products="${products}" 
+            data-info="${[name, price, stars, kitchen]}">
             <img src="${image}" alt="image" class="card-image" />
             <div class="card-text">
                 <div class="card-heading">
@@ -158,7 +170,7 @@ const createCardFood = (goods) =>{
 
     card.insertAdjacentHTML('beforeend',  `
 
-        <img src="${image}" alt="image" class="card-image" />
+        <img src="${image}" alt="${name}" class="card-image" />
         
         <div class="card-text">
             <div class="card-heading">
@@ -186,16 +198,28 @@ const createCardFood = (goods) =>{
     
 };
 
+// Открывает меню ресторана
 const openGoods = (event) => {
     const target = event.target;
 
     if (login){
+
         const restaurant = target.closest('.card-restaurant');
         if (restaurant){
+
+            const info =restaurant.dataset.info.split(',');
+            const [name, price, stars, kitchen] = info;
+            
+
 
             cardsMenu.textContent = '';
             containerPromo.classList.add('hide');
             restaurants.classList.add('hide');
+
+            restaurantTitle.textContent = name;
+            rating.textContent = stars;
+            minPrice.textContent = `От ${price} ₽`;
+            category.textContent = kitchen;
 
             getData(`./db/${restaurant.dataset.products}`).then((data)=>{
                 data.forEach(createCardFood);
@@ -232,6 +256,15 @@ const init = () =>{
         restaurants.classList.remove('hide');
         menu.classList.add('hide');
     });
+// TODO Доделать поиск
+    inputSearch.addEventListener('keydown', (event) =>{
+        if (event.keyCode === 13){
+            const target = event.target;
+            console.log(target.value);
+            const goods = [];
+            //...
+        }
+    });
     
     checkAuth();
     
@@ -254,6 +287,8 @@ const init = () =>{
             },
         
     });
+
+
 }
 
 
